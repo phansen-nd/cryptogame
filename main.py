@@ -45,7 +45,7 @@ def run_base(server):
                 print()
                 sys.stdout.flush()
 
-def run_read_only(server):
+def run_read_only(server, has_keys):
     print('Connecting...')
     while True:
             sockets_list = [server]
@@ -56,31 +56,45 @@ def run_read_only(server):
                 if socket == server:
                     message = socket.recv(2048).decode()
                     print(message)
+                    if has_keys and not message == "Connected to the messaging channel.":
+                        print('Attempting to decrypt the message...\n')
+                        components = message.split('\n')
+                        try: print(decrypt_ordinals(components[1]))
+                        except: print()
+
+                        try: print(decrypt_caesar(components[1]))
+                        except: print()
+
+                        try: print(decrypt_binary(components[1]))
+                        except: print()
+
+                        try: print(decrypt_xor(components[1]))
+                        except: print()
+
+                        print('\n')
+                        
 
 def run_field_agent(server):
     print('You will receive messages here that instruct you what to do in the field. Mix in diversions of your own design to throw the codebreakers off your scent!\n')
-    run_read_only(server)
+    run_read_only(server, True)
 
 def run_codebreaker(server):
     print('You will see all encrypted messages in your terminal here; your objective is to crack them and tell your field agent what to reverse in the field.\n')
-    run_read_only(server)
+    run_read_only(server, False)
 
 if __name__ == '__main__':
-    # print('\nWelcome to Codebreakers!\n')
+    print('\nWelcome to Codebreakers!\n')
     
-    # role_options = ['Base', 'Field Agent', 'Codebreaker']
-    # menu = TerminalMenu(role_options, title='Choose your role: ')
-    # index = menu.show()
-    # role = role_options[index]
+    role_options = ['Base', 'Field Agent', 'Codebreaker']
+    menu = TerminalMenu(role_options, title='Choose your role: ')
+    index = menu.show()
+    role = role_options[index]
     
-    # # Connect to server
-    # server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # server.connect((HOST, PORT))
+    # Connect to server
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.connect((HOST, PORT))
     
-    # # Begin subroutines
-    # if role == 'Base': run_base(server)
-    # elif role == 'Field Agent': run_field_agent(server)
-    # elif role == 'Codebreaker': run_codebreaker(server)
-
-    message = "turn on the fireplace"
-    print(decrypt_ordinals(ordinals(message)))
+    # Begin subroutines
+    if role == 'Base': run_base(server)
+    elif role == 'Field Agent': run_field_agent(server)
+    elif role == 'Codebreaker': run_codebreaker(server)
