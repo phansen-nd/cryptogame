@@ -5,8 +5,8 @@ from time import sleep
 XOR_KEY = '10101010'
 
 def sleep_for(seconds):
-    for i in range(seconds):
-        print(str(seconds - i) + '...')
+    for i in range(1):
+        print('Encrypting...' + str(seconds - i))
         sleep(1)
 
 def ordinals(message):

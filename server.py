@@ -42,7 +42,7 @@ list_of_clients = []
 def clientthread(conn, addr):
  
     # sends a message to the client whose user object is conn
-    conn.send("Connected to the messaging channel.".encode())
+    conn.send("Connected to the messaging channel.\n".encode())
  
     while True:
             try:

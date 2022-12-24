@@ -7,7 +7,7 @@ import sys
 
 from algorithm import *
 
-HOST = "192.168.4.23"  # The server's hostname or IP address
+HOST = "10.0.0.91"  # The server's hostname or IP address
 PORT = 8081  # The port used by the server
 
 def encrypt_with_level(message, level):
@@ -15,6 +15,15 @@ def encrypt_with_level(message, level):
     elif level == 2: return caesar(message)
     elif level == 3: return binary(message)
     elif level == 4: return xor(message)
+
+def decrypt_with_level(message, level):
+    try:
+        if level == 1: return decrypt_ordinals(message)
+        elif level == 2: return decrypt_caesar(message)
+        elif level == 3: return decrypt_binary(message)
+        elif level == 4: return decrypt_xor(message)
+    except:
+        print('Error decrypting message!')
 
 def run_base(server):
     print('You are in charge of distributing encrypted information to your field agent in order to acheive your objective.\n')
@@ -34,12 +43,12 @@ def run_base(server):
 
             # Message originates from you, encrypt it, send it to the server, and print it in your window for posterity.
             else:
-                raw_message = sys.stdin.readline()
-                components = raw_message.rstrip().split(':')
+                raw_message = sys.stdin.readline().rstrip()
+                components = raw_message.split(':')
                 encrypt_level = int(components[0])
                 message = components[1].strip()
                 encrypted = encrypt_with_level(message, encrypt_level)
-                server.send(encrypted.encode())
+                server.send((str(encrypt_level) + ': ' + encrypted).encode())
                 print("\n<You> ")
                 print(encrypted)
                 print()
@@ -54,22 +63,17 @@ def run_read_only(server, has_keys):
             for socket in read_sockets:
                 # Message originates from server, just decode and print it.
                 if socket == server:
-                    message = socket.recv(2048).decode()
-                    print(message)
-                    if has_keys and not message == "Connected to the messaging channel.":
+                    message_data = socket.recv(2048).decode()
+                    print(message_data)
+                    if has_keys and not message_data == "Connected to the messaging channel.\n":
                         print('Attempting to decrypt the message...\n')
-                        components = message.split('\n')
-                        try: print(decrypt_ordinals(components[1]))
-                        except: print()
-
-                        try: print(decrypt_caesar(components[1]))
-                        except: print()
-
-                        try: print(decrypt_binary(components[1]))
-                        except: print()
-
-                        try: print(decrypt_xor(components[1]))
-                        except: print()
+                        components = message_data.split('\n')
+                        raw_message = components[1]
+                        msg_components = raw_message.split(':')
+                        encryption_level = int(msg_components[0].strip())
+                        message = msg_components[1].rstrip()
+                        
+                        print(decrypt_with_level(message, encryption_level))
 
                         print('\n')
                         
