@@ -7,9 +7,6 @@ import sys
 
 from algorithm import *
 
-HOST = "10.0.0.91"  # The server's hostname or IP address
-PORT = 8081  # The port used by the server
-
 def encrypt_with_level(message, level):
     if level == 1: return ordinals(message)
     elif level == 2: return caesar(message)
@@ -87,6 +84,17 @@ def run_codebreaker(server):
     run_read_only(server, False)
 
 if __name__ == '__main__':
+
+    if len(sys.argv) != 3:
+        print ("Correct usage: script, IP address, port number")
+        exit()
+    
+    # takes the first argument from command prompt as IP address
+    HOST = str(sys.argv[1])
+    
+    # takes second argument from command prompt as port number
+    PORT = int(sys.argv[2])
+
     print('\nWelcome to Codebreakers!\n')
     
     role_options = ['Base', 'Field Agent', 'Codebreaker']

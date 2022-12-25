@@ -5,7 +5,7 @@ from time import sleep
 XOR_KEY = '10101010'
 
 def sleep_for(seconds):
-    for i in range(1):
+    for i in range(seconds):
         print('Encrypting...' + str(seconds - i))
         sleep(1)
 
